@@ -1,4 +1,4 @@
-const sqlite3 = require("sqlite3").verbose();
+const initSqlJs = require("sql.js");
 const { promisify } = require("node:util");
 const { randomBytes, scrypt: scryptCallback } = require("node:crypto");
 const path = require("node:path");
@@ -16,14 +16,29 @@ async function seedDatabase(dbPath) {
   const resolvedPath = dbPath || path.join(__dirname, "data", "billing.sqlite");
   fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
 
-  const db = new sqlite3.Database(resolvedPath);
-  const run = (sql, params = []) =>
-    new Promise((resolve, reject) => {
-      db.run(sql, params, function (error) {
-        if (error) reject(error);
-        else resolve({ lastID: this.lastID, changes: this.changes });
-      });
-    });
+  const SQL = await initSqlJs();
+  let db;
+  if (fs.existsSync(resolvedPath)) {
+    try {
+      db = new SQL.Database(fs.readFileSync(resolvedPath));
+    } catch {
+      db = new SQL.Database();
+    }
+  } else {
+    db = new SQL.Database();
+  }
+
+  const run = (sql, params = []) => {
+    try {
+      if (params && params.length) db.run(sql, params);
+      else db.run(sql);
+      const lastID = db.exec("SELECT last_insert_rowid() AS id")[0]?.values[0][0] || 0;
+      const changes = db.exec("SELECT changes() AS ch")[0]?.values[0][0] || 0;
+      return Promise.resolve({ lastID, changes });
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  };
 
   console.log("Resetting database at:", resolvedPath);
 
@@ -580,8 +595,10 @@ async function seedDatabase(dbPath) {
     [inv5.lastID, 7, "Payment Gateway & API Integration", 1, 2200000, 18, 2596000]
   );
 
+  const data = db.export();
+  fs.writeFileSync(resolvedPath, Buffer.from(data));
   console.log("Demo seed successfully completed!");
-  await new Promise((resolve) => db.close(resolve));
+  db.close();
 }
 
 if (require.main === module) {

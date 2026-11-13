@@ -1,5 +1,5 @@
 const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
+const initSqlJs = require("sql.js");
 const PDFDocument = require("pdfkit");
 const { promisify } = require("node:util");
 const {
@@ -23,23 +23,56 @@ const dataDirectory = process.env.DATA_DIR || path.join(__dirname, "data");
 fs.mkdirSync(dataDirectory, { recursive: true });
 
 const databasePath = process.env.DATABASE_PATH || path.join(dataDirectory, "billing.sqlite");
-const db = new sqlite3.Database(databasePath);
 const scrypt = promisify(scryptCallback);
-const run = (sql, params = []) =>
-  new Promise((resolve, reject) => {
-    db.run(sql, params, function (error) {
-      if (error) reject(error);
-      else resolve({ lastID: this.lastID, changes: this.changes });
-    });
-  });
-const get = (sql, params = []) =>
-  new Promise((resolve, reject) => {
-    db.get(sql, params, (error, row) => (error ? reject(error) : resolve(row)));
-  });
-const all = (sql, params = []) =>
-  new Promise((resolve, reject) => {
-    db.all(sql, params, (error, rows) => (error ? reject(error) : resolve(rows)));
-  });
+
+let db;
+let saveTimer = null;
+
+function saveDatabase() {
+  if (!db) return;
+  try {
+    const data = db.export();
+    fs.writeFileSync(databasePath, Buffer.from(data));
+  } catch (err) {
+    console.error("Failed to persist database to disk:", err);
+  }
+}
+
+function scheduleSave() {
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveDatabase, 50);
+}
+
+function all(sql, params = []) {
+  try {
+    const stmt = db.prepare(sql);
+    if (params && params.length) stmt.bind(params);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    stmt.free();
+    return Promise.resolve(rows);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+function get(sql, params = []) {
+  return all(sql, params).then((rows) => rows[0] || undefined);
+}
+
+function run(sql, params = []) {
+  try {
+    if (params && params.length) db.run(sql, params);
+    else db.run(sql);
+    const lastID = db.exec("SELECT last_insert_rowid() AS id")[0]?.values[0][0] || 0;
+    const changes = db.exec("SELECT changes() AS ch")[0]?.values[0][0] || 0;
+    scheduleSave();
+    return Promise.resolve({ lastID, changes });
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
 let transactionQueue = Promise.resolve();
 const transaction = (work) => {
   const current = transactionQueue.then(async () => {
@@ -47,6 +80,7 @@ const transaction = (work) => {
     try {
       const result = await work();
       await run("COMMIT");
+      saveDatabase();
       return result;
     } catch (error) {
       await run("ROLLBACK");
@@ -57,7 +91,18 @@ const transaction = (work) => {
   return current;
 };
 
-db.serialize(() => {
+const invoiceSchemaReady = (async () => {
+  const SQL = await initSqlJs();
+  if (fs.existsSync(databasePath)) {
+    try {
+      db = new SQL.Database(fs.readFileSync(databasePath));
+    } catch {
+      db = new SQL.Database();
+    }
+  } else {
+    db = new SQL.Database();
+  }
+
   db.run("PRAGMA foreign_keys = ON");
   db.exec(`
     CREATE TABLE IF NOT EXISTS customers (
@@ -166,7 +211,8 @@ db.serialize(() => {
       PRIMARY KEY (user_id, permission_key)
     );
   `);
-  db.run(
+
+  await run(
     `INSERT OR IGNORE INTO settings (key, value) VALUES
       ('business_name', 'SMADemo'),
       ('business_email', 'billing@smadigital.in'),
@@ -176,7 +222,8 @@ db.serialize(() => {
       ('invoice_prefix', 'INV'),
       ('payment_terms', 'Payment due within 15 days of invoice date')`
   );
-  db.run(
+
+  await run(
     `INSERT OR IGNORE INTO sales_permissions (permission_key, enabled) VALUES
       ('customers_view', 1),
       ('customers_manage', 0),
@@ -187,36 +234,18 @@ db.serialize(() => {
       ('invoices_send', 1),
       ('payments', 1)`
   );
-});
 
-const invoiceSchemaReady = new Promise((resolve, reject) => {
-  db.all("PRAGMA table_info(invoices)", (error, columns) => {
-    if (error) {
-      reject(error);
-      return;
-    }
-    const existingColumns = new Set(columns.map((column) => column.name));
-    const migrations = [
-      ["discount_rate", "REAL NOT NULL DEFAULT 0"],
-      ["discount_paise", "INTEGER NOT NULL DEFAULT 0"],
-    ].filter(([name]) => !existingColumns.has(name));
-    const applyMigration = (index) => {
-      if (index === migrations.length) {
-        resolve();
-        return;
-      }
-      const [name, definition] = migrations[index];
-      db.run(`ALTER TABLE invoices ADD COLUMN ${name} ${definition}`, (migrationError) => {
-        if (migrationError) {
-          reject(migrationError);
-          return;
-        }
-        applyMigration(index + 1);
-      });
-    };
-    applyMigration(0);
-  });
-});
+  const columns = await all("PRAGMA table_info(invoices)");
+  const existingColumns = new Set(columns.map((c) => c.name));
+  if (!existingColumns.has("discount_rate")) {
+    await run("ALTER TABLE invoices ADD COLUMN discount_rate REAL NOT NULL DEFAULT 0");
+  }
+  if (!existingColumns.has("discount_paise")) {
+    await run("ALTER TABLE invoices ADD COLUMN discount_paise INTEGER NOT NULL DEFAULT 0");
+  }
+
+  saveDatabase();
+})();
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -1876,8 +1905,7 @@ invoiceSchemaReady
     });
   })
   .catch((error) => {
-    console.error("Could not initialize the invoice database schema.", error);
-    db.close(() => {
-      process.exitCode = 1;
-    });
+    console.error("Could not initialize the database schema.", error);
+    if (db) db.close();
+    process.exitCode = 1;
   });
