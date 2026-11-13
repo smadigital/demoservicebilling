@@ -1,5 +1,5 @@
 /**
- * API client module for ApexFlow Billing
+ * API client module for SMADemo Billing
  */
 
 let onSessionExpired = null;

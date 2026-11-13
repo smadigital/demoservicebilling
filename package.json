@@ -1,5 +1,5 @@
 {
-  "name": "apexflow-billing",
+  "name": "smademo-billing",
   "version": "1.0.0",
   "description": "Modern billing, invoicing, and quotation management software for service businesses",
   "main": "server.js",

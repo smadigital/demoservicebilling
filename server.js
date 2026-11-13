@@ -168,11 +168,11 @@ db.serialize(() => {
   `);
   db.run(
     `INSERT OR IGNORE INTO settings (key, value) VALUES
-      ('business_name', 'ApexFlow Technologies'),
-      ('business_email', 'billing@apexflow.demo'),
-      ('business_phone', '+1 (555) 234-5678'),
-      ('business_address', 'Suite 400, Apex Tech Park, 100 Innovation Boulevard, Cyber City'),
-      ('business_gstin', '29ABCDE1234F1Z5'),
+      ('business_name', 'SMADemo'),
+      ('business_email', 'billing@smadigital.in'),
+      ('business_phone', '+91 93423 12115'),
+      ('business_address', 'SMA Digital Hub, Tamil Nadu, India'),
+      ('business_gstin', '33ABCDE1234F1Z5'),
       ('invoice_prefix', 'INV'),
       ('payment_terms', 'Payment due within 15 days of invoice date')`
   );
@@ -1316,10 +1316,10 @@ app.get("/api/quotes/:id/pdf", requirePermission("quotes"), async (req, res, nex
       const logoJpg = path.join(__dirname, "public", "logo.jpg");
       const logoPath = fs.existsSync(logoPng) ? logoPng : logoJpg;
       if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, 48, 44, { fit: [56, 56] });
+        doc.image(logoPath, 48, 44, { fit: [60, 48] });
       }
       doc.fillColor("#1c2434").font("Helvetica-Bold").fontSize(14)
-        .text(business.business_name || "ApexFlow Technologies", 116, 46, { width: 250 });
+        .text(business.business_name || "SMADemo", 116, 46, { width: 250 });
       doc.fillColor("#596579").font("Helvetica").fontSize(8)
         .text(
           [
@@ -1617,10 +1617,10 @@ app.get("/api/invoices/:id/pdf", requirePermission("invoices_send"), async (req,
       const logoJpg = path.join(__dirname, "public", "logo.jpg");
       const logoPath = fs.existsSync(logoPng) ? logoPng : logoJpg;
       if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, 48, 44, { fit: [56, 56] });
+        doc.image(logoPath, 48, 44, { fit: [60, 48] });
       }
       doc.fillColor("#1c2434").font("Helvetica-Bold").fontSize(14)
-        .text(business.business_name || "ApexFlow Technologies", 116, 46, { width: 250 });
+        .text(business.business_name || "SMADemo", 116, 46, { width: 250 });
       doc.fillColor("#596579").font("Helvetica").fontSize(8)
         .text(
           [
@@ -1811,12 +1811,12 @@ app.get("/api/settings", async (req, res, next) => {
     const rows = await all("SELECT key, value FROM settings");
     const values = Object.fromEntries(rows.map((row) => [row.key, row.value]));
     res.json({
-      business_name: values.business_name?.trim() || "ApexFlow Technologies",
-      business_email: values.business_email?.trim() || "billing@apexflow.demo",
-      business_phone: values.business_phone?.trim() || "+1 (555) 234-5678",
+      business_name: values.business_name?.trim() || "SMADemo",
+      business_email: values.business_email?.trim() || "billing@smadigital.in",
+      business_phone: values.business_phone?.trim() || "+91 93423 12115",
       business_address: values.business_address?.trim()
-        || "Suite 400, Apex Tech Park, 100 Innovation Boulevard, Cyber City",
-      business_gstin: values.business_gstin || "29ABCDE1234F1Z5",
+        || "SMA Digital Hub, Tamil Nadu, India",
+      business_gstin: values.business_gstin || "33ABCDE1234F1Z5",
       invoice_prefix: values.invoice_prefix?.trim() || "INV",
       payment_terms: values.payment_terms?.trim() || "Payment due within 15 days of invoice date",
     });
@@ -1872,7 +1872,7 @@ app.use((error, req, res, next) => {
 invoiceSchemaReady
   .then(() => {
     app.listen(port, () => {
-      console.log(`ApexFlow Billing is running at http://localhost:${port}`);
+      console.log(`SMADemo Billing is running at http://localhost:${port}`);
     });
   })
   .catch((error) => {

@@ -555,7 +555,7 @@ export async function shareInvoicePdf(button) {
     const blob = await response.blob();
     const filename = `${button.dataset.shareNumber.replace(/[^a-zA-Z0-9_-]/g, "_")}.pdf`;
     const file = typeof File === "function" ? new File([blob], filename, { type: "application/pdf" }) : null;
-    const businessName = state.settings.business_name || "ApexFlow Technologies";
+    const businessName = state.settings.business_name || "SMADemo Technologies";
     const message = `⚠️ [DEMO QUOTATION/INVOICES - NOT VALID]\nHello ${button.dataset.shareCustomer}, please find demo invoice ${button.dataset.shareNumber} from ${businessName} attached.\n(Notice: This is a Demo application, so shared invoices and quotations are not Valid.)`;
 
     if (

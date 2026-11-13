@@ -196,11 +196,11 @@ async function seedDatabase(dbPath) {
 
   // 1. Seed Business Settings
   const defaultSettings = [
-    ["business_name", "ApexFlow Technologies"],
-    ["business_email", "billing@apexflow.demo"],
-    ["business_phone", "+1 (555) 234-5678"],
-    ["business_address", "Suite 400, Apex Tech Park, 100 Innovation Boulevard, Cyber City"],
-    ["business_gstin", "29ABCDE1234F1Z5"],
+    ["business_name", "SMADemo"],
+    ["business_email", "billing@smadigital.in"],
+    ["business_phone", "+91 93423 12115"],
+    ["business_address", "SMA Digital Hub, Tamil Nadu, India"],
+    ["business_gstin", "33ABCDE1234F1Z5"],
     ["invoice_prefix", "INV"],
     ["payment_terms", "Payment due within 15 days of invoice date"],
   ];

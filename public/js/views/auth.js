@@ -20,9 +20,9 @@ export function showAuthScreen(setupRequired, message = "", onLoginSuccess = nul
     authScreen.innerHTML = `
       <section class="auth-card">
         <div class="auth-brand">
-          <img class="brand-logo auth-logo" src="/logo.svg" onerror="this.onerror=null;this.src='/logo.png';" alt="ApexFlow logo" />
+          <img class="brand-logo auth-logo" src="/logo.png" alt="SMADemo logo" />
           <span>
-            <strong>ApexFlow Billing</strong>
+            <strong>SMADemo</strong>
             <small>Workspace setup</small>
           </span>
         </div>
@@ -107,9 +107,9 @@ export function showAuthScreen(setupRequired, message = "", onLoginSuccess = nul
   authScreen.innerHTML = `
     <section class="auth-card">
       <div class="auth-brand">
-        <img class="brand-logo auth-logo" src="/logo.svg" onerror="this.onerror=null;this.src='/logo.png';" alt="ApexFlow logo" />
+        <img class="brand-logo auth-logo" src="/logo.png" alt="SMADemo logo" />
         <span>
-          <strong>ApexFlow Billing</strong>
+          <strong>SMADemo</strong>
           <small>Modern billing & invoicing workspace</small>
         </span>
       </div>

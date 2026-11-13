@@ -4,7 +4,7 @@
 import { escapeHtml, dateFormat, money, statusPill } from "../utils.js";
 
 export function documentBrand(settings, label, number, status) {
-  const businessName = escapeHtml(settings?.business_name || "ApexFlow Technologies");
+  const businessName = escapeHtml(settings?.business_name || "SMADemo Technologies");
   const businessAddress = escapeHtml(settings?.business_address || "");
   const businessPhone = escapeHtml(settings?.business_phone || "");
   const businessEmail = escapeHtml(settings?.business_email || "");
@@ -17,7 +17,7 @@ export function documentBrand(settings, label, number, status) {
     </div>
     <div class="detail-header">
       <div class="business-brand">
-        <img class="document-logo" src="/logo.svg" onerror="this.onerror=null;this.src='/logo.png';" alt="${businessName} logo" />
+        <img class="document-logo" src="/logo.png" alt="${businessName} logo" />
         <div>
           <div class="detail-brand">${businessName}</div>
           <div class="business-contact">
@@ -55,7 +55,7 @@ export function whatsappShareUrl({
   paidPaise = 0,
   notes,
 }) {
-  const businessName = settings?.business_name || "ApexFlow Technologies";
+  const businessName = settings?.business_name || "SMADemo Technologies";
   const label = type === "quote" ? "quotation" : "invoice";
   const itemLines = items.map(
     (item) => `• ${item.description} × ${item.quantity}: ${money(item.line_total_paise)}`

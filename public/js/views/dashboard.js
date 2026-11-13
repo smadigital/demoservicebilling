@@ -27,7 +27,7 @@ export async function renderDashboard() {
   );
 
   const businessShortName = escapeHtml(
-    (state.settings.business_name || "ApexFlow").split(" ")[0]
+    (state.settings.business_name || "SMADemo").split(" ")[0]
   );
 
   const newInvoiceBtn =
