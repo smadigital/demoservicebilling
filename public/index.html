@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>ApexFlow | Modern Billing & Invoicing</title>
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Authentication / Onboarding Screen -->
+    <main id="auth-screen" class="auth-screen" hidden></main>
+
+    <!-- Main Workspace Application Shell -->
+    <div class="app-shell" hidden>
+      <!-- Top Row Header with Navigation -->
+      <header class="app-top-header">
+        <div class="top-header-inner">
+          <div class="top-header-left">
+            <a class="brand" href="#" aria-label="ApexFlow Billing home">
+              <img class="brand-logo" src="/logo.svg" onerror="this.onerror=null;this.src='/logo.png';" alt="ApexFlow logo" />
+              <span>
+                <span class="brand-title-wrap">
+                  <strong>ApexFlow</strong>
+                  <span class="demo-live-badge"><span class="pulse-dot"></span> LIVE DEMO</span>
+                </span>
+                <small>Billing workspace</small>
+              </span>
+            </a>
+            <nav id="navigation" class="top-nav" aria-label="Main navigation">
+              <button class="nav-item active" data-page="dashboard"><span>◫</span> Dashboard</button>
+              <button class="nav-item" data-page="invoices" data-access="invoices"><span>▤</span> Invoices</button>
+              <button class="nav-item" data-page="quotes" data-access="quotes"><span>▧</span> Quotes</button>
+              <button class="nav-item" data-page="customers" data-access="customers_view"><span>♙</span> Customers</button>
+              <button class="nav-item" data-page="services" data-access="services_view"><span>◇</span> Services</button>
+              <button class="nav-item admin-only" data-page="payments"><span>₹</span> Payment history</button>
+            </nav>
+          </div>
+
+          <div class="top-header-right">
+            <button class="nav-item nav-item-settings admin-only" data-page="settings" title="Business settings"><span>⚙</span> Settings</button>
+            <span class="header-divider"></span>
+            <span class="today-label" id="today-label"></span>
+            <div class="account-menu">
+              <button
+                class="avatar top-avatar"
+                id="account-menu-toggle"
+                type="button"
+                aria-label="Open account menu"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="account-menu"
+              >
+                A
+              </button>
+              <div class="account-menu-panel" id="account-menu" hidden>
+                <div class="account-menu-user">
+                  <strong id="profile-name">User</strong>
+                  <small id="profile-role">Staff</small>
+                </div>
+                <button class="account-menu-logout" id="logout-button" type="button">Log out</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Context Sub-bar with Breadcrumbs -->
+      <div class="sub-bar">
+        <div class="sub-bar-inner">
+          <div class="breadcrumb">
+            <span>Workspace</span>
+            <span class="crumb-sep">/</span>
+            <strong id="page-title">Dashboard</strong>
+          </div>
+          <div class="demo-sub-pill">
+            <span class="sparkle">✦</span>
+            <span>Interactive Demo Edition</span>
+          </div>
+        </div>
+      </div>
+
+      <main class="main-content">
+        <section id="page-content" class="page-content" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <!-- Modals and Notifications -->
+    <dialog id="form-dialog" class="modal"></dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Charting & Data Visualization -->
+    <script src="/vendor/chart.umd.js"></script>
+
+    <!-- Modular Script Entry Point -->
+    <script type="module" src="/js/app.js"></script>
+  </body>
+</html>

@@ -1,11 +1,30 @@
 {
-  "name": "billing-software",
+  "name": "apexflow-billing",
   "version": "1.0.0",
-  "description": "Modern multi-user billing, invoicing, and quotation management software",
+  "description": "Modern billing, invoicing, and quotation management software for service businesses",
+  "main": "server.js",
   "scripts": {
-    "start": "npm --prefix sma-billing start",
-    "dev": "npm --prefix sma-billing run dev",
-    "seed": "npm --prefix sma-billing run seed",
-    "postinstall": "npm --prefix sma-billing install --omit=dev"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node seed-demo.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "body-parser": "^2.4.0",
+    "chart.js": "^4.6.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "pdfkit": "^0.20.2",
+    "sqlite3": "5.1.7"
+  },
+  "overrides": {
+    "tar": "^7.5.22",
+    "@tootallnate/once": "^2.0.1"
   }
 }
