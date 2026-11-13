@@ -1,0 +1,11 @@
+{
+  "name": "billing-software",
+  "version": "1.0.0",
+  "description": "Modern multi-user billing, invoicing, and quotation management software",
+  "scripts": {
+    "start": "npm --prefix sma-billing start",
+    "dev": "npm --prefix sma-billing run dev",
+    "seed": "npm --prefix sma-billing run seed",
+    "postinstall": "npm --prefix sma-billing install --omit=dev"
+  }
+}
